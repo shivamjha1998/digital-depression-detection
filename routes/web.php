@@ -29,4 +29,4 @@ Route::post('/questionnaire/{step}', [QuestionnaireController::class, 'store'])-
 
 
 // Dashboard routes
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');

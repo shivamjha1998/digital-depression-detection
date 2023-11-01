@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -76,5 +77,15 @@
             @yield('content')
         </main>
     </div>
+    @stack('scripts')
 </body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    window.addEventListener('load', function() {
+        let containers = document.querySelectorAll('.container');
+        containers.forEach((container) => {
+            container.classList.add('fade-in');
+        });
+    });
+</script>
 </html>

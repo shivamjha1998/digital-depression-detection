@@ -10,20 +10,31 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
-// Example using Chart.js to plot data
-const ctx = document.getElementById('scoreChart').getContext('2d');
-const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: @json($dates),  // An array of dates
-        datasets: [{
-            label: 'PHQ-9 Score',
-            data: @json($scores),  // An array of scores
-            borderColor: 'blue',
-            fill: false
-        }]
-    }
-});
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @json($dates),  // An array of dates
+                datasets: [{
+                    label: 'PHQ-9 Score',
+                    data: @json($scores),  // An array of scores
+                    borderColor: 'blue',
+                    fill: false,
+                    tension: 0.1 // This will make the line smooth
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
 </script>
+@endpush
 @endsection

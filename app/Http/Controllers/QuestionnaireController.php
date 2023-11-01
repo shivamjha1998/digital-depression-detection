@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Score;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionnaireController extends Controller
 {
@@ -49,6 +51,14 @@ class QuestionnaireController extends Controller
                 $feedback = "Your symptoms suggest moderately severe depression.";
             } else {
                 $feedback = "Your symptoms suggest severe depression.";
+            }
+
+            // If user is logged in, store the score in the database
+            if (Auth::check()) {
+                $user = Auth::user();
+                $user->scores()->create([
+                    'score' => $totalScore,
+                ]);
             }
 
             // Redirect back with the feedback
