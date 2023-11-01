@@ -11,10 +11,11 @@ class QuestionnaireController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function show()
+    public function show($step = 1)
     {
-        return view('questionnaire'); // Using the name of your view file.
+        return view('questionnaire', ['step' => $step]);
     }
+
 
     /**
      * Handle the form submission, calculate the depression score, and give feedback.
@@ -22,33 +23,39 @@ class QuestionnaireController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $step = 1)
     {
-        // You can retrieve the answers like so:
-        $answers = $request->all();
-        unset($answers['_token']);  // Remove CSRF token from the list
+        // Store the answer in the session
+        session(["question{$step}" => $request->input("question{$step}")]);
 
-        // Calculate the total score
-        $totalScore = array_sum($answers);
-
-        // Based on the totalScore, you can provide feedback to the user.
-        // For instance: (You can refine this based on the PHQ-9 scoring guidelines)
-        if ($totalScore <= 4) {
-            $feedback = "Your symptoms suggest minimal depression.";
-        } elseif ($totalScore <= 9) {
-            $feedback = "Your symptoms suggest mild depression.";
-        } elseif ($totalScore <= 14) {
-            $feedback = "Your symptoms suggest moderate depression.";
-        } elseif ($totalScore <= 19) {
-            $feedback = "Your symptoms suggest moderately severe depression.";
+        if($step < 9) {
+            return redirect()->route('questionnaire.show', ['step' => $step + 1]);
         } else {
-            $feedback = "Your symptoms suggest severe depression.";
-        }
+            // Calculate the total score using session data
+            $totalScore = 0;
+            for ($i = 1; $i <= 9; $i++) {
+                $totalScore += session("question{$i}");
+            }
 
-        // Redirect back with the feedback
-        return view('result', [
-            'score' => $totalScore,
-            'interpretation' => $feedback
-        ]);
+            // Based on the totalScore, you can provide feedback to the user.
+            // For instance: (You can refine this based on the PHQ-9 scoring guidelines)
+            if ($totalScore <= 4) {
+                $feedback = "Your symptoms suggest minimal depression.";
+            } elseif ($totalScore <= 9) {
+                $feedback = "Your symptoms suggest mild depression.";
+            } elseif ($totalScore <= 14) {
+                $feedback = "Your symptoms suggest moderate depression.";
+            } elseif ($totalScore <= 19) {
+                $feedback = "Your symptoms suggest moderately severe depression.";
+            } else {
+                $feedback = "Your symptoms suggest severe depression.";
+            }
+
+            // Redirect back with the feedback
+            return view('result', [
+                'score' => $totalScore,
+                'interpretation' => $feedback
+            ]);
+        }
     }
 }
